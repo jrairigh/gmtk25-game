@@ -1,0 +1,24 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Game",
+            "url": "http://localhost:8080/webroot/",
+            "webRoot": "${workspaceFolder}/webroot",
+            "preLaunchTask":"Start HTTP Server"
+        },
+        {
+            "type": "cppvsdbg",
+            "request": "launch",
+            "name": "Debug Game",
+            "args": ["5", ""],
+            "program": "${workspaceFolder}/runtime/build-Debug/gmtk25/gmtk25.exe",
+            "cwd": "${workspaceFolder}/runtime/build-Debug/gmtk25"
+        }
+    ]
+}
