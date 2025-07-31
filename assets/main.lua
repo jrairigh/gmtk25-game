@@ -50,8 +50,8 @@ end
 
 function UpdateGame()
     PlanetCycles.Update()
-    Camera.Update()
     Player.Update()
+    Camera.Update()
 end
 
 function RenderGame()

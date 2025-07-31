@@ -1,5 +1,6 @@
 require("assets.rt.capi")
 require("assets.rt.vec2")
+require("assets.camera")
 
 local playerTransform = {
     Position = Vector.Zero, 
@@ -7,25 +8,27 @@ local playerTransform = {
     Rotation = 0
 }
 
-local oldPlayerPosition = Vector.Zero
-local moveTime = 0
-local touchPosition = Vector.Zero
-local delay = 1
+local playerTarget = Vector.Zero
+local playerMoveDirection = Vector.Zero
+local playerSpeed = 100
 
 Player = {
     Update = function()
         local touch = GetTouch()
-        local time = GetTime()
+        local playerPosition = playerTransform.Position
 
         if touch.IsTapped then
-            touchPosition = ScreenToWorldSpace(touch.Position)
-            moveTime = time + delay
-            oldPlayerPosition = playerTransform.Position
+            playerTarget = ScreenToWorldSpace(touch.Position)
+            playerMoveDirection = (playerTarget - playerPosition):Normalized()
         end
 
-        if (moveTime - time) > 0 then
-            local t = (delay - (moveTime - time)) / delay
-            playerTransform.Position = Vector.Lerp(oldPlayerPosition, touchPosition, t)
+        if (playerTarget - playerPosition):SquaredLength() > 1 then
+            playerTransform.Position = playerPosition + playerMoveDirection * playerSpeed * GetFrameTime()
+        end
+
+        local playerOffsetFromCenter = playerPosition - Camera.Position()
+        if (math.abs(playerOffsetFromCenter.X) > 10) or (math.abs(playerOffsetFromCenter.Y) > 50) then
+            Camera.MoveToTarget(playerPosition)
         end
     end,
 
