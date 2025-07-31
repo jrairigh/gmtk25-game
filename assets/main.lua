@@ -11,17 +11,13 @@ local windowTitle = "GMTK25 Game"
 
 ConfigureGame(windowHeight, windowTitle)
 
+SetCameraZoom(3)
+SetCameraOffset(Vector:New(362 / 2, windowHeight / 2))
+
 Sounds = {}
+
 Textures = {}
-
-local function LoadTextures()
-end
-
-local function LoadSounds()
-end
-
-LoadTextures()
-LoadSounds()
+Textures.DrawPlanet = LoadTextureEx("art/planet.png", 0, 0, 1, 1)
 
 function OnUpdate()
     UpdateGame()
@@ -35,10 +31,39 @@ function OnUpdateUI()
     end
 end
 
+MoveTime = 0
+TouchPosition = Vector.Zero
+CameraTarget = Vector.Zero
+Delay = 1
+OldCamPosition = Vector.Zero
+local cameraOffset = GetCameraOffset()
+local camOffset = Vector:New(cameraOffset.X, cameraOffset.Y)
+
 function UpdateGame()
+    local touch = GetTouch()
+    local time = GetTime()
+
+    if touch.IsTapped then
+        TouchPosition = touch.Position
+        CameraTarget = TouchPosition - camOffset
+        CameraTarget:Print()
+        MoveTime = time + Delay
+        OldCamPosition = GetCameraPosition()
+    end
+
+    if MoveTime - time > 0 then
+        local offset = Vector.Lerp(Vector.Zero, CameraTarget, (Delay - (MoveTime - time)) / Delay)
+        local cameraPosition = OldCamPosition + offset
+        SetCameraPosition(cameraPosition)
+    end
 end
 
 function RenderGame()
+    Textures.DrawPlanet(1, 1, 0xFFFFFFFF, {Position = Vector:New(0, 0), Scale = Vector:New(1, 1), Rotation = 0})
+    local time = GetTime()
+    if MoveTime - time > 0 then
+        DrawCircle(ScreenToWorldSpace(TouchPosition), 6, 0xFF0000FF, true)
+    end
 end
 
 function OnWindowResized(width, height)
