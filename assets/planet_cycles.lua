@@ -11,6 +11,12 @@ local eveningHour = 6
 local minWindSpeed = 0
 local maxWindSpeed = 20
 local windSpeed = 10
+local brightness = 0x333333
+
+local function GetPlanetTint()
+    brightness = Cycles(brightness, 0x333333FF, 0xFFFFFFFF, 3, 6, 30, 30, LerpColor)
+    return brightness
+end
 
 PlanetCycles = {
     Update = function()
@@ -36,6 +42,10 @@ PlanetCycles = {
     GetWindSpeed = function()
         windSpeed = Cycles(windSpeed, minWindSpeed, maxWindSpeed, 4, 6, 50, 10, LerpNumber)
         return windSpeed
+    end,
+
+    Render = function()
+        Textures.DrawPlanet(0, 0, GetPlanetTint(), {Position = Vector.Zero, Scale = Vector:New(1, 1), Rotation = 0})
     end
 }
 
@@ -53,3 +63,5 @@ function Cycles(value, a, b, bHourStart, bHourEnd, lerpStartMinute_A, lerpEndMin
 
     return value
 end
+
+
