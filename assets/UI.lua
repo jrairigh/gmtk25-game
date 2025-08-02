@@ -2,8 +2,26 @@ require("assets.rt.capi")
 require("assets.rt.vec2")
 require("assets.planet_cycles")
 require("assets.player")
+require("assets.inventory")
 
 local target = Vector.Zero
+local isOpeningInventory = true
+
+local RenderInventory = function()
+    local inventoryPosition = Vector:New(Window.Width / 2 - 160, 0)
+    local scaledSpriteSize = SpriteSize * 2.5
+    for i = 1, 4 do
+        for j = 1, 4 do
+            local x = inventoryPosition.X + (i - 1) * scaledSpriteSize
+            local y = inventoryPosition.Y + (j - 1) * scaledSpriteSize
+            DrawRectangle({X = x, Y = y, Width = scaledSpriteSize, Height = scaledSpriteSize}, 4, 0x000000FF, 0xFFFFFF20, true)
+        end
+    end
+
+    if Inventory.HasItem(Items.Fins) then
+        Fins:RenderInventory(inventoryPosition)
+    end
+end
 
 UI = {
     RenderUI = function(inWorld)
@@ -16,6 +34,10 @@ UI = {
 
             local windDir = PlanetCycles.GetWindVelocity()
             DrawLine(Vector:New(40, 40), Vector:New(40, 40) + windDir, 5, 0xFF0000FF)
+
+            if isOpeningInventory then
+                RenderInventory()
+            end
         else
             local touch = GetTouch()
             if touch.IsTapped then

@@ -2,6 +2,7 @@ require("assets.rt.capi")
 require("assets.rt.vec2")
 require("assets.camera")
 require("assets.items")
+require("assets.inventory")
 
 local playerTransform = {
     Position = Vector.Zero, 
@@ -20,7 +21,7 @@ local function IsItemTouched(item)
         Width = SpriteSize,
         Height = SpriteSize
     }
-    local isTouched = not Inventory.HasItem(item.Id) and CheckCollision(itemBoundingBox, playerTransform.Position)
+    local isTouched = not Inventory.HasItem(GetItemById(item.Id)) and CheckCollision(itemBoundingBox, playerTransform.Position)
 
     if isTouched then
         Sounds.PlayPickupSfx()
@@ -49,21 +50,21 @@ Player = {
         end
 
         if IsItemTouched(Fins) then
-            Inventory.AddItem(Fins.Id)
+            Inventory.AddItem(Items.Fins)
         elseif IsItemTouched(Body) then
-            Inventory.AddItem(Body.Id)
+            Inventory.AddItem(Items.Body)
         elseif IsItemTouched(FuelRod1) then
-            Inventory.AddItem(FuelRod1.Id)
+            Inventory.AddItem(Items.FuelRod1)
         elseif IsItemTouched(FuelRod2) then
-            Inventory.AddItem(FuelRod2.Id)
+            Inventory.AddItem(Items.FuelRod2)
         elseif IsItemTouched(FuelRod3) then
-            Inventory.AddItem(FuelRod3.Id)
+            Inventory.AddItem(Items.FuelRod3)
         elseif IsItemTouched(CrewCapsule) then
-            Inventory.AddItem(CrewCapsule.Id)
+            Inventory.AddItem(Items.CrewCapsule)
         elseif IsItemTouched(NavigationModule) then
-            Inventory.AddItem(NavigationModule.Id)
+            Inventory.AddItem(Items.NavigationModule)
         elseif IsItemTouched(CommunicationsModule) then
-            Inventory.AddItem(CommunicationsModule.Id)
+            Inventory.AddItem(Items.CommunicationsModule)
         end
     end,
 
