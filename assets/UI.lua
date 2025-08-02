@@ -2,6 +2,7 @@ require("assets.rt.capi")
 require("assets.rt.vec2")
 require("assets.planet_cycles")
 require("assets.player")
+require("assets.math")
 
 local target = Vector.Zero
 
@@ -24,7 +25,7 @@ UI = {
             end
 
             if (Player.Position() - target):SquaredLength() > (2 * 2) then
-                DrawCircle(target, 4, 0xFF0000FF, false)
+                DrawCircle(target, 4, 0x00FF00FF, false)
             else
                 target = Player.Position()
             end

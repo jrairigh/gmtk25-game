@@ -2,6 +2,7 @@ require("assets.rt.capi")
 require("assets.rt.vec2")
 require("assets.camera")
 require("assets.items")
+require("assets.math")
 
 local playerTransform = {
     Position = Vector.Zero, 
@@ -47,6 +48,14 @@ Player = {
         if touch.IsTapped then
             playerTarget = ScreenToWorldSpace(touch.Position)
             playerMoveDirection = (playerTarget - playerPosition):Normalized()
+        end
+
+        if playerMoveDirection ~= Vector.Zero and IsTouchingWater(playerTransform.Position + playerMoveDirection, 4, 4) then
+            -- TODO if has boat then allow to move
+            --else
+            Sounds.PlayNopeSfx()
+            playerMoveDirection = Vector.Zero
+            --end
         end
 
         if (playerTarget - playerPosition):SquaredLength() > 1 then

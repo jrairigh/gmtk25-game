@@ -25,11 +25,13 @@ SetCameraPosition(Vector.Zero)
 
 Sounds = {}
 Sounds.PlayPickupSfx = LoadSoundEx("sfx/pickup.wav")
+Sounds.PlayNopeSfx = LoadSoundEx("sfx/nope.wav")
 
 Textures = {}
 Textures.DrawPlanet = LoadTextureEx("art/planet.png", 0, 0, 1, 1)
 Textures.DrawPlayer = LoadTextureEx("art/player.png", 0, 0, 4, 4)
 Textures.DrawItems = LoadTextureEx("art/items.png", 0, 0, 4, 4)
+Textures.WaterMaskId = LoadImage("art/water_mask.png")
 
 function OnUpdate()
     UpdateGame()
