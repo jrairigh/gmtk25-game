@@ -1,27 +1,30 @@
 local inventory = {}
-
-Items = {
-    Fins = 0,
-    Body = 1,
-    FuelRod1 = 2,
-    FuelRod2 = 3,
-    FuelRod3 = 4,
-    CrewCapsule = 5,
-    NavigationModule = 6,
-    CommunicationsModule = 7,
-}
+local selectedItemId = -1
 
 Inventory = {
     AddItem = function(item)
         table.insert(inventory, item)
     end,
 
-    HasItem = function(item)
+    HasItem = function(itemId)
         for _, invItem in ipairs(inventory) do
-            if invItem == item then
+            if invItem.Id == itemId then
                 return true
             end
         end
         return false
+    end,
+
+    HasItems = function(itemIds)
+        for _, itemId in ipairs(itemIds) do
+            if not Inventory.HasItem(itemId) then
+                return false
+            end
+        end
+        return true
+    end,
+
+    SelectItem = function(itemId)
+        selectedItemId = itemId
     end,
 }

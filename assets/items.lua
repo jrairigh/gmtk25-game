@@ -5,6 +5,17 @@ require("assets.inventory")
 
 SpriteSize = 32
 
+Items = {
+    Fins = {Id = 0, Position = Vector.Zero},
+    Body = {Id = 1, Position = Vector.Zero},
+    FuelRod1 = {Id = 2, Position = Vector.Zero},
+    FuelRod2 = {Id = 3, Position = Vector.Zero},
+    FuelRod3 = {Id = 4, Position = Vector.Zero},
+    CrewCapsule = {Id = 5, Position = Vector.Zero},
+    NavigationModule = {Id = 6, Position = Vector.Zero},
+    CommunicationsModule = {Id = 7, Position = Vector.Zero},
+}
+
 Item = {
     New = function(spritePositions, position, id)
         local item = {
@@ -37,11 +48,12 @@ Item = {
 }
 
 LaunchPad = Item.New({3, 0, 3, 1, 1, 0, 2, 0}, Vector:New(180, 144), -1)
-Fins = Item.New({3, 2}, Vector:New(70, 25), Items.Fins)
-Body = Item.New({2, 2}, Vector:New(255, 91), Items.Body)
-FuelRod1 = Item.New({2, 3}, Vector:New(220, 11), Items.FuelRod1)
-FuelRod2 = Item.New({2, 3}, Vector:New(230, 11), Items.FuelRod2)
-FuelRod3 = Item.New({2, 3}, Vector:New(240, 11), Items.FuelRod3)
-CrewCapsule = Item.New({1, 2}, Vector:New(38, 158), Items.CrewCapsule)
-NavigationModule = Item.New({0, 2}, Vector:New(-115, 74), Items.NavigationModule)
-CommunicationsModule = Item.New({0, 3}, Vector:New(3, -73), Items.CommunicationsModule)
+RocketShip = Item.New({2, 1, 1, 1, 0, 1}, Vector:New(185, 144), -1)
+Fins = Item.New({3, 2}, Vector:New(70, 25), Items.Fins.Id)
+Body = Item.New({2, 2}, Vector:New(255, 91), Items.Body.Id)
+FuelRod1 = Item.New({2, 3}, Vector:New(220, 11), Items.FuelRod1.Id)
+FuelRod2 = Item.New({2, 3}, Vector:New(230, 11), Items.FuelRod2.Id)
+FuelRod3 = Item.New({2, 3}, Vector:New(240, 11), Items.FuelRod3.Id)
+CrewCapsule = Item.New({1, 2}, Vector:New(38, 158), Items.CrewCapsule.Id)
+NavigationModule = Item.New({0, 2}, Vector:New(-115, 74), Items.NavigationModule.Id)
+CommunicationsModule = Item.New({0, 3}, Vector:New(3, -73), Items.CommunicationsModule.Id)

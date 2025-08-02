@@ -46,6 +46,10 @@ function OnUpdateUI()
 end
 
 function UpdateGame()
+    if Player.HasWonGame() then
+        return
+    end
+    
     PlanetCycles.Update()
     Player.Update()
     Camera.Update()
@@ -63,7 +67,15 @@ function RenderGame()
     CrewCapsule:Render()
     NavigationModule:Render()
     CommunicationsModule:Render()
+
+    if Player.HasWonGame() then
+        RocketShip:Render()
+    end
+
     UI.RenderUI(true)
+end
+
+function RenderRocketShip()
 end
 
 function OnWindowResized(width, height)
