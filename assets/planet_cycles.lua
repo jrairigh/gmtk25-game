@@ -14,8 +14,12 @@ local windSpeed = 10
 local brightness = 0x333333
 
 local function GetPlanetTint()
-    brightness = Cycles(brightness, 0x333333FF, 0xFFFFFFFF, 3, 6, 30, 30, LerpColor)
+    brightness = Cycles(brightness, 0x333333FF, 0xFFFFFFFF, 2, 6, 30, 30, LerpColor)
     return brightness
+end
+
+function IsDay()
+    return GetPlanetTint() == 0xFFFFFFFF
 end
 
 PlanetCycles = {

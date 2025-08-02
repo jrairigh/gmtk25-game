@@ -6,6 +6,7 @@ require("assets.math")
 require("assets.player")
 require("assets.UI")
 require("assets.items")
+require("assets.aliens")
 
 SupportedDevices = {
     Laptop = "16x9",
@@ -21,17 +22,21 @@ Window = {
 ConfigureGame(Window.Height, Window.Title)
 
 SetCameraZoom(3)
-SetCameraPosition(Vector.Zero)
+SetCameraPosition(PlayerHomePosition)
 
 Sounds = {}
 Sounds.PlayPickupSfx = LoadSoundEx("sfx/pickup.wav")
 Sounds.PlayNopeSfx = LoadSoundEx("sfx/nope.wav")
+Sounds.PlayDeathSfx = LoadSoundEx("sfx/death.wav")
 
 Textures = {}
 Textures.DrawPlanet = LoadTextureEx("art/planet.png", 0, 0, 1, 1)
 Textures.DrawPlayer = LoadTextureEx("art/player.png", 0, 0, 4, 4)
 Textures.DrawItems = LoadTextureEx("art/items.png", 0, 0, 4, 4)
+Textures.DrawAliens = LoadTextureEx("art/aliens.png", 0, 0, 4, 4)
 Textures.WaterMaskId = LoadImage("art/water_mask.png")
+
+SpriteSize = 32
 
 function OnUpdate()
     UpdateGame()
@@ -55,6 +60,9 @@ function UpdateGame()
     PlanetCycles.Update()
     Player.Update()
     Camera.Update()
+
+    NocturnalAlien:Update()
+    SeaAlienSubmerged:Update()
 end
 
 function RenderGame()
@@ -69,6 +77,9 @@ function RenderGame()
     CrewCapsule:Render()
     NavigationModule:Render()
     CommunicationsModule:Render()
+    Boat:Render()
+    NocturnalAlien:Render()
+    SeaAlienSubmerged:Render()
 
     if Player.HasWonGame() then
         RocketShip:Render()

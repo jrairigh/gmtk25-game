@@ -2,6 +2,7 @@ require("assets.rt.capi")
 require("assets.rt.vec2")
 
 local cameraTarget = Vector.Zero
+local isCameraMoving = false
 
 Camera = {
     Offset = function()
@@ -16,12 +17,17 @@ Camera = {
     MoveToTarget = function(target)
         cameraTarget = target
     end,
+
+    IsCameraIdle = function()
+        return not isCameraMoving
+    end,
     
     Update = function()
         local cameraPosition = Camera.Position()
         local cameraOffset = cameraTarget - cameraPosition
         local length = cameraOffset:Length()
-        if length > 10 then
+        isCameraMoving = length > 10
+        if isCameraMoving then
             local cameraMoveDirection = cameraOffset:Normalized()
             cameraPosition = cameraPosition + cameraMoveDirection * length * 0.75 * GetFrameTime()
             SetCameraPosition(cameraPosition)
