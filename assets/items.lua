@@ -57,5 +57,5 @@ FuelRod3 = Item.New({2, 3}, Vector:New(240, 11), Items.FuelRod3.Id)
 CrewCapsule = Item.New({1, 2}, Vector:New(38, 158), Items.CrewCapsule.Id)
 NavigationModule = Item.New({0, 2}, Vector:New(-115, 74), Items.NavigationModule.Id)
 CommunicationsModule = Item.New({0, 3}, Vector:New(3, -73), Items.CommunicationsModule.Id)
-Meat = Item.New({3, 1}, Vector:New(3, -73), Items.Meat.Id)
 Boat = Item.New({0, 0}, Vector:New(422, -360), Items.Boat.Id, Vector:New(0.5, 0.5))
+Meat = nil

@@ -109,7 +109,7 @@ local function CheckItemsTouched()
     elseif IsItemTouched(CommunicationsModule) then
         Inventory.AddItem(Items.CommunicationsModule)
         Inventory.SelectItem(Items.CommunicationsModule.Id) -- TODO selecting should be done in UI
-    elseif IsItemTouched(Meat) then
+    elseif Meat ~= nil and IsItemTouched(Meat) then
         Inventory.AddItem(Items.Meat)
         Inventory.SelectItem(Items.Meat.Id) -- TODO selecting should be done in UI
     elseif IsItemTouched(Boat) then

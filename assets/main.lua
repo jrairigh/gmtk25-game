@@ -28,6 +28,7 @@ Sounds = {}
 Sounds.PlayPickupSfx = LoadSoundEx("sfx/pickup.wav")
 Sounds.PlayNopeSfx = LoadSoundEx("sfx/nope.wav")
 Sounds.PlayDeathSfx = LoadSoundEx("sfx/death.wav")
+Sounds.PlayGrowlSfx = LoadSoundEx("sfx/growl.wav")
 
 Textures = {}
 Textures.DrawPlanet = LoadTextureEx("art/planet.png", 0, 0, 1, 1)
@@ -62,6 +63,7 @@ function UpdateGame()
     Camera.Update()
 
     NocturnalAlien:Update()
+    DaytimeAlien:Update()
     SeaAlien:Update()
 end
 
@@ -79,7 +81,12 @@ function RenderGame()
     CommunicationsModule:Render()
     Boat:Render()
     NocturnalAlien:Render()
+    DaytimeAlien:Render()
     SeaAlien:Render()
+
+    if Meat ~= nil then
+        Meat:Render()
+    end
 
     if Player.HasWonGame() then
         RocketShip:Render()

@@ -5,13 +5,16 @@ require("assets.player")
 require("assets.planet_cycles")
 
 local nocturnalAlienSpeed = 100
+local daytimeAlienSpeed = 60
 local seaAlienSpeed = 100
+local campirePosition = Vector:New(227, 142)
 
 CommonStates = {
     Idle = 0,
     Chasing = 1,
     Attacking = 2,
     ReturnHome = 3,
+    Dead = 9
 }
 
 Alien = {
@@ -47,17 +50,23 @@ local function UpdateIdle(self, enabled)
     if (Player.Position() - self.Transform.Position):SquaredLength() < (100 * 100) then
         if enabled then
             self.State = CommonStates.Chasing
+            Sounds.PlayGrowlSfx()
         end
     end
 end
 
-local function UpdateChasing(self, speed)
+local function UpdateChasing(self, speed, homePosition)
     local moveDirection = (Player.Position() - self.Transform.Position):Normalized()
     self.Transform.Position = self.Transform.Position + moveDirection * speed * GetFrameTime()
-    if (self.Transform.Position - self.HomePosition):SquaredLength() > (100 * 100) then
+    if (self.Transform.Position - homePosition):SquaredLength() > (100 * 100) then
         self.State = CommonStates.ReturnHome
     elseif (Player.Position() - self.Transform.Position):SquaredLength() < (20 * 20) then
         self.State = CommonStates.Attacking
+    end
+
+    if (self.Transform.Position - campirePosition):SquaredLength() < (10 * 10) then
+        self.State = CommonStates.Dead
+        Meat = Item.New({3, 1}, self.Transform.Position, Items.Meat.Id)
     end
 end
 
@@ -70,13 +79,16 @@ local function UpdateReturnHome(self, speed)
 end
 
 local function NocturnalAlien_Update(self)
+    if self.State == CommonStates.Dead then
+        return
+    end
     if PlanetCycles.GetTemperature() > 10 then
         self.State = 4
         self.Transform.Position = self.HomePosition
     elseif self.State == CommonStates.Idle then
         UpdateIdle(self, not Player.IsPlayerOnWater())
     elseif self.State == CommonStates.Chasing then
-        UpdateChasing(self, nocturnalAlienSpeed)
+        UpdateChasing(self, nocturnalAlienSpeed, self.HomePosition)
     elseif self.State == CommonStates.Attacking then
         Player.Dies()
         self.State = CommonStates.ReturnHome
@@ -90,6 +102,9 @@ local function NocturnalAlien_Update(self)
 end
 
 local function NocturnalAlien_Render(self)
+    if self.State == CommonStates.Dead then
+        return
+    end
     if self.State == 4 then
         -- in burrow
         RenderSprites({1, 0}, self.Transform)
@@ -98,12 +113,39 @@ local function NocturnalAlien_Render(self)
     end
 end
 
+local function DaytimeAlien_Update(self)
+    if self.State == CommonStates.Dead then
+        return
+    end
+    if self.State == CommonStates.Idle then
+        UpdateIdle(self, not Player.IsPlayerOnWater())
+    elseif self.State == CommonStates.Chasing then
+        UpdateChasing(self, daytimeAlienSpeed, Player.Position())
+    elseif self.State == CommonStates.Attacking then
+        Player.Dies()
+        self.State = CommonStates.ReturnHome
+    elseif self.State == CommonStates.ReturnHome then
+        UpdateReturnHome(self, daytimeAlienSpeed)
+    end
+end
+
+local function DaytimeAlien_Render(self)
+    if self.State == CommonStates.Dead then
+        return
+    end
+
+    RenderSprites({0, 0}, self.Transform)
+end
+
 local function SeaAlien_Update(self)
+    if self.State == CommonStates.Dead then
+        return
+    end
     if self.State == CommonStates.Idle then
         UpdateIdle(self, Player.IsPlayerOnWater())
     elseif self.State == CommonStates.Chasing then
         if Player.IsPlayerOnWater() then
-            UpdateChasing(self, seaAlienSpeed)
+            UpdateChasing(self, seaAlienSpeed, self.HomePosition)
         else
             self.State = CommonStates.ReturnHome
         end
@@ -116,6 +158,10 @@ local function SeaAlien_Update(self)
 end
 
 local function SeaAlien_Render(self)
+    if self.State == CommonStates.Dead then
+        return
+    end
+
     local isCloseToPlayer = self.State == CommonStates.Chasing and (self.Transform.Position - Player.Position()):SquaredLength() < (50 * 50)
     if self.State == CommonStates.Attacking or isCloseToPlayer then
         RenderSprites({1, 1, 1, 2}, self.Transform)
@@ -128,6 +174,11 @@ NocturnalAlien = Alien.New(
     CommonStates.Idle,
     Vector:New(396, -343), 
     NocturnalAlien_Update, NocturnalAlien_Render)
+
+DaytimeAlien = Alien.New(
+    CommonStates.Idle,
+    Vector:New(-242, 270), 
+    DaytimeAlien_Update, DaytimeAlien_Render)
 
 SeaAlien = Alien.New(
     CommonStates.Idle, 
