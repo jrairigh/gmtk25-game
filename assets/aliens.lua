@@ -50,7 +50,7 @@ end
 
 local function UpdateIdle(self, enabled)
     if (Player.Position() - self.Transform.Position):SquaredLength() < (100 * 100) then
-        if enabled or Meat ~= nil then
+        if enabled then
             self.State = CommonStates.Chasing
             Sounds.PlayGrowlSfx()
         end
@@ -191,5 +191,5 @@ DaytimeAlien = Alien.New(
 
 SeaAlien = Alien.New(
     CommonStates.Idle, 
-    Vector:New(-212, -253), 
+    Vector:New(-220, -275), 
     SeaAlien_Update, SeaAlien_Render)

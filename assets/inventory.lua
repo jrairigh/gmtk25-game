@@ -1,5 +1,4 @@
 local inventory = {}
-local selectedItemId = -1
 
 Inventory = {
     AddItem = function(item)
@@ -22,10 +21,6 @@ Inventory = {
             end
         end
         return true
-    end,
-
-    SelectItem = function(itemId)
-        selectedItemId = itemId
     end,
 
     DropItem = function(itemId)
