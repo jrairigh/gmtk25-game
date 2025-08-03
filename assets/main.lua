@@ -32,10 +32,12 @@ Sounds.PlayAlienDeathSfx = LoadSoundEx("sfx/alien_death.wav")
 
 Textures = {}
 Textures.DrawPlanet = LoadTextureEx("art/planet.png", 0, 0, 1, 1)
+Textures.DrawTreeTops = LoadTextureEx("art/tree_tops.png", 0, 0, 1, 1)
 Textures.DrawPlayer = LoadTextureEx("art/player.png", 0, 0, 4, 4)
 Textures.DrawItems = LoadTextureEx("art/items.png", 0, 0, 4, 4)
 Textures.DrawAliens = LoadTextureEx("art/aliens.png", 0, 0, 4, 4)
 Textures.WaterMaskId = LoadImage("art/water_mask.png")
+Textures.LandMaskId = LoadImage("art/land_mask.png")
 
 SpriteSize = 32
 
@@ -73,6 +75,7 @@ function RenderGame()
         Meat:Render()
     end
 
+    Campsite:Render()
     Player.Render()
     LaunchPad:Render()
     Fins:Render()
@@ -90,6 +93,8 @@ function RenderGame()
     if Player.HasWonGame() then
         RocketShip:Render()
     end
+
+    Textures.DrawTreeTops(0, 0, GetPlanetTint(), {Position = Vector.Zero, Rotation = 0, Scale = Vector:New(1, 1)})
 
     UI.RenderUI(true)
 end

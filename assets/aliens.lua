@@ -146,7 +146,7 @@ local function DaytimeAlien_Render(self)
         return
     end
 
-    RenderSprites({0, 0}, self.Transform)
+    RenderSprites({2, 0, 2, 1}, self.Transform)
 end
 
 local function SeaAlien_Update(self)

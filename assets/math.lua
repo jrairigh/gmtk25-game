@@ -41,3 +41,13 @@ function IsTouchingWater(position, width, height)
     }
     return IsOverlappingMask(bounds, Textures.WaterMaskId)
 end
+
+function IsLandObstacle(position, width, height)
+    local bounds = {
+        X = position.X - (width / 2),
+        Y = position.Y - (height / 2),
+        Width = width,
+        Height = height
+    }
+    return IsOverlappingMask(bounds, Textures.LandMaskId)
+end

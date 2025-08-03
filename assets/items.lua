@@ -49,6 +49,7 @@ Item = {
 
 LaunchPad = Item.New({3, 0, 1, 0, 2, 0}, Vector:New(180, 144), -1)
 RocketShip = Item.New({2, 1, 1, 1, 0, 1}, Vector:New(185, 144), -1)
+Campsite = Item.New({3, 3}, Vector:New(226, 148), -1)
 Fins = Item.New({3, 2}, Vector:New(-96, -218), Items.Fins.Id)
 Body = Item.New({2, 2}, Vector:New(255, 91), Items.Body.Id)
 FuelRod1 = Item.New({2, 3}, Vector:New(376, -306), Items.FuelRod1.Id)

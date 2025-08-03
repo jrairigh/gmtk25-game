@@ -13,7 +13,7 @@ local maxWindSpeed = 50
 local windSpeed = 0
 local brightness = 0x333333
 
-local function GetPlanetTint()
+function GetPlanetTint()
     brightness = Cycles(brightness, 0x333333FF, 0xFFFFFFFF, 2, 6, 30, 30, LerpColor)
     return brightness
 end

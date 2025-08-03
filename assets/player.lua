@@ -86,7 +86,7 @@ local function CheckCollisions()
             playerMoveDirection = Vector.Zero
             playerIsOnWater = false
         end
-    elseif CheckCollisionWithNocturalAlienBurrow(nextFramePlayerPosition) or IsAtLaunchPad(nextFramePlayerPosition) then
+    elseif CheckCollisionWithNocturalAlienBurrow(nextFramePlayerPosition) or IsLandObstacle(nextFramePlayerPosition, 4, 4) then
         Sounds.PlayNopeSfx()
         playerMoveDirection = Vector.Zero
     end
