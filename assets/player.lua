@@ -16,6 +16,8 @@ local playerMoveDirection = Vector.Zero
 local playerSpeed = 100
 local playerIsOnWater = false
 
+Inventory.AddItem(Items.Boat)
+
 local PlayerStates = {
     Alive = 1,
     Dead = 2
@@ -49,38 +51,10 @@ local function IsAtLaunchPad()
     return CheckCollision(launchPadBoundingBox, playerTransform.Position)
 end
 
-local function RenderPlayerShadow()
-    local bounds = {}
-    if playerIsOnWater then
-        bounds = {
-            X = playerTransform.Position.X - 10,
-            Y = playerTransform.Position.Y + 5,
-            Width = 20,
-            Height = 5,
-        }
-    else
-        bounds = {
-            X = playerTransform.Position.X - 3,
-            Y = playerTransform.Position.Y + 5,
-            Width = 6,
-            Height = 3,
-        }
-    end
-
-    DrawRectangle(bounds, 1, 0, 0x000000c0, true)
-end
-
-local function UpdateAlive()
-    local touch = GetTouch()
-    local playerPosition = playerTransform.Position
-
-    if touch.IsTapped then
-        playerTarget = ScreenToWorldSpace(touch.Position)
-        playerMoveDirection = (playerTarget - playerPosition):Normalized()
-    end
-
-    playerIsOnWater = false
-    if playerMoveDirection ~= Vector.Zero and IsTouchingWater(playerTransform.Position + playerMoveDirection, 4, 4)  then
+local function CheckCollisions()
+    -- Check player colliding with water or cliffs
+    local nextFramePlayerPosition = playerTransform.Position + playerMoveDirection
+    if playerMoveDirection ~= Vector.Zero and IsTouchingWater(nextFramePlayerPosition, 4, 4)  then
         -- checking if player is on launch pad because it uses the same mask as the water, so acquiring the boat would allow saling through
         -- the launch pad
         if Inventory.HasItem(Items.Boat.Id) and not IsAtLaunchPad() then
@@ -88,18 +62,29 @@ local function UpdateAlive()
         else
             Sounds.PlayNopeSfx()
             playerMoveDirection = Vector.Zero
+            playerIsOnWater = false
+        end
+    elseif playerIsOnWater then
+        if CheckCollision({X = -280, Y = -378, Width = 166, Height = 13}, nextFramePlayerPosition) or
+           CheckCollision({X = -512, Y = -234, Width = 218, Height = 12}, nextFramePlayerPosition) or
+           CheckCollision({X = -127, Y = -512, Width = 12, Height = 147}, nextFramePlayerPosition) then
+            Sounds.PlayNopeSfx()
+            playerMoveDirection = Vector.Zero
+        else
+            playerIsOnWater = false
         end
     end
+end
 
-    if (playerTarget - playerPosition):SquaredLength() > 1 then
-        playerTransform.Position = playerPosition + playerMoveDirection * playerSpeed * GetFrameTime()
-    end
-
+local function UpdateCameraTarget()
+    local playerPosition = playerTransform.Position
     local playerOffsetFromCenter = playerPosition - Camera.Position()
     if (math.abs(playerOffsetFromCenter.X) > 10) or (math.abs(playerOffsetFromCenter.Y) > 50) then
         Camera.MoveToTarget(playerPosition + playerMoveDirection * ((Window.Width * 0.5) / GetCameraZoom()))
     end
+end
 
+local function CheckItemsTouched()
     if IsItemTouched(Fins) then
         Inventory.AddItem(Items.Fins)
         Inventory.SelectItem(Items.Fins.Id) -- TODO selecting should be done in UI
@@ -133,6 +118,51 @@ local function UpdateAlive()
     end
 end
 
+local function MovePlayerToTarget()
+    local playerPosition = playerTransform.Position
+    if (playerTarget - playerPosition):SquaredLength() > 1 then
+        playerTransform.Position = playerPosition + playerMoveDirection * playerSpeed * GetFrameTime()
+    end
+end
+
+local function GetTouchTarget()
+    local touch = GetTouch()
+    local playerPosition = playerTransform.Position
+    if touch.IsTapped then
+        playerTarget = ScreenToWorldSpace(touch.Position)
+        playerMoveDirection = (playerTarget - playerPosition):Normalized()
+    end
+end
+
+local function RenderPlayerShadow()
+    local bounds = {}
+    if playerIsOnWater then
+        bounds = {
+            X = playerTransform.Position.X - 10,
+            Y = playerTransform.Position.Y + 5,
+            Width = 20,
+            Height = 5,
+        }
+    else
+        bounds = {
+            X = playerTransform.Position.X - 3,
+            Y = playerTransform.Position.Y + 5,
+            Width = 6,
+            Height = 3,
+        }
+    end
+
+    DrawRectangle(bounds, 1, 0, 0x000000c0, true)
+end
+
+local function UpdateAlive()
+    GetTouchTarget()
+    CheckCollisions()
+    MovePlayerToTarget()
+    UpdateCameraTarget()
+    CheckItemsTouched()
+end
+
 local function UpdateDead()
     if Camera.IsCameraIdle() then
         playerState = PlayerStates.Alive
@@ -153,7 +183,7 @@ Player = {
     end,
 
     Render = function()
-        RenderPlayerShadow()
+        --RenderPlayerShadow()
         if playerIsOnWater then
             Textures.DrawItems(1, 3, 0xFFFFFFFF, playerTransform)
         else
@@ -174,6 +204,7 @@ Player = {
         playerTransform.Position = PlayerHomePosition
         playerMoveDirection = Vector.Zero
         playerState = PlayerStates.Dead
+        playerIsOnWater = false
         Camera.MoveToTarget(PlayerHomePosition)
     end
 }

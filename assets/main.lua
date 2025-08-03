@@ -62,7 +62,7 @@ function UpdateGame()
     Camera.Update()
 
     NocturnalAlien:Update()
-    SeaAlienSubmerged:Update()
+    SeaAlien:Update()
 end
 
 function RenderGame()
@@ -79,16 +79,13 @@ function RenderGame()
     CommunicationsModule:Render()
     Boat:Render()
     NocturnalAlien:Render()
-    SeaAlienSubmerged:Render()
+    SeaAlien:Render()
 
     if Player.HasWonGame() then
         RocketShip:Render()
     end
 
     UI.RenderUI(true)
-end
-
-function RenderRocketShip()
 end
 
 function OnWindowResized(width, height)
