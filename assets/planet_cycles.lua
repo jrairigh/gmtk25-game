@@ -9,8 +9,8 @@ local hoursPerDay = 7
 local morningHour = 2
 local eveningHour = 6
 local minWindSpeed = 0
-local maxWindSpeed = 20
-local windSpeed = 10
+local maxWindSpeed = 50
+local windSpeed = 0
 local brightness = 0x333333
 
 local function GetPlanetTint()
@@ -38,13 +38,11 @@ PlanetCycles = {
     end,
 
     GetWindVelocity = function()
-        local windX = math.cos(gameClock * 10)
-        local windY = math.sin(gameClock * 10)
-        return Vector:New(windX, windY) * PlanetCycles.GetWindSpeed()
+        return Vector:New(-.7071, .7071) * PlanetCycles.GetWindSpeed()
     end,
 
     GetWindSpeed = function()
-        windSpeed = Cycles(windSpeed, minWindSpeed, maxWindSpeed, 4, 6, 50, 10, LerpNumber)
+        windSpeed = Cycles(windSpeed, minWindSpeed, maxWindSpeed, 0, 1, 30, 30, LerpNumber)
         return windSpeed
     end,
 

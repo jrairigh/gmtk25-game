@@ -27,4 +27,13 @@ Inventory = {
     SelectItem = function(itemId)
         selectedItemId = itemId
     end,
+
+    DropItem = function(itemId)
+        for i, invItem in ipairs(inventory) do
+            if invItem.Id == itemId then
+                table.remove(inventory, i)
+                return
+            end
+        end
+    end,
 }

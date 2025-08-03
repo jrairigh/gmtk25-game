@@ -69,6 +69,10 @@ end
 
 function RenderGame()
     PlanetCycles.Render()
+    if Meat ~= nil then
+        Meat:Render()
+    end
+
     Player.Render()
     LaunchPad:Render()
     Fins:Render()
@@ -83,11 +87,6 @@ function RenderGame()
     NocturnalAlien:Render()
     DaytimeAlien:Render()
     SeaAlien:Render()
-
-    if Meat ~= nil then
-        Meat:Render()
-    end
-
     if Player.HasWonGame() then
         RocketShip:Render()
     end

@@ -4,6 +4,8 @@ require("assets.math")
 require("assets.player")
 require("assets.planet_cycles")
 
+NocturnalAlienHomePosition = Vector:New(396, -343)
+
 local nocturnalAlienSpeed = 100
 local daytimeAlienSpeed = 60
 local seaAlienSpeed = 100
@@ -48,7 +50,7 @@ end
 
 local function UpdateIdle(self, enabled)
     if (Player.Position() - self.Transform.Position):SquaredLength() < (100 * 100) then
-        if enabled then
+        if enabled or Meat ~= nil then
             self.State = CommonStates.Chasing
             Sounds.PlayGrowlSfx()
         end
@@ -68,6 +70,11 @@ local function UpdateChasing(self, speed, homePosition)
         self.State = CommonStates.Dead
         Meat = Item.New({3, 1}, self.Transform.Position, Items.Meat.Id)
     end
+
+    if PlanetCycles.GetTemperature() > 10  then
+        self.State = 4
+        self.Transform.Position = self.HomePosition
+    end
 end
 
 local function UpdateReturnHome(self, speed)
@@ -76,16 +83,18 @@ local function UpdateReturnHome(self, speed)
     if (self.Transform.Position - self.HomePosition):SquaredLength() < (10 * 10) then
         self.State = CommonStates.Idle
     end
+
+    if PlanetCycles.GetTemperature() > 15 then
+        self.State = CommonStates.Dead
+    end
 end
 
 local function NocturnalAlien_Update(self)
     if self.State == CommonStates.Dead then
         return
     end
-    if PlanetCycles.GetTemperature() > 10 then
-        self.State = 4
-        self.Transform.Position = self.HomePosition
-    elseif self.State == CommonStates.Idle then
+
+    if self.State == CommonStates.Idle then
         UpdateIdle(self, not Player.IsPlayerOnWater())
     elseif self.State == CommonStates.Chasing then
         UpdateChasing(self, nocturnalAlienSpeed, self.HomePosition)
@@ -145,7 +154,7 @@ local function SeaAlien_Update(self)
         UpdateIdle(self, Player.IsPlayerOnWater())
     elseif self.State == CommonStates.Chasing then
         if Player.IsPlayerOnWater() then
-            UpdateChasing(self, seaAlienSpeed, self.HomePosition)
+            UpdateChasing(self, seaAlienSpeed - PlanetCycles.GetWindSpeed(), self.HomePosition)
         else
             self.State = CommonStates.ReturnHome
         end
@@ -172,7 +181,7 @@ end
 
 NocturnalAlien = Alien.New(
     CommonStates.Idle,
-    Vector:New(396, -343), 
+    NocturnalAlienHomePosition, 
     NocturnalAlien_Update, NocturnalAlien_Render)
 
 DaytimeAlien = Alien.New(
