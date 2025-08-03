@@ -17,14 +17,14 @@ local playerTarget = Vector.Zero
 local playerMoveDirection = Vector.Zero
 local playerSpeed = 100
 local playerIsOnWater = false
-Inventory.AddItem(Items.Boat)
+--Inventory.AddItem(Items.Boat)
 
 local PlayerStates = {
     Alive = 1,
     Dead = 2
 }
 
-local playerState = PlayerStates.Alive
+local playerState = PlayerStates.Dead
 
 local function IsItemTouched(item)
     local itemBoundingBox = {
@@ -54,8 +54,9 @@ end
 
 local function CheckCliffCollision(nextFramePlayerPosition)
     return CheckCollision({X = -280, Y = -378, Width = 166, Height = 13}, nextFramePlayerPosition) or
-           CheckCollision({X = -512, Y = -234, Width = 218, Height = 12}, nextFramePlayerPosition) or
-           CheckCollision({X = -127, Y = -512, Width = 12, Height = 147}, nextFramePlayerPosition)
+           CheckCollision({X = -512, Y = -234, Width = 278, Height = 12}, nextFramePlayerPosition) or
+           CheckCollision({X = -125, Y = -512, Width = 19, Height = 147}, nextFramePlayerPosition) or
+           CheckCollision({X = -245, Y = -263, Width = 19, Height = 41}, nextFramePlayerPosition)
 end
 
 local function CheckCollisionWithNocturalAlienBurrow(nextFramePlayerPosition)
@@ -96,11 +97,13 @@ local function UpdateCameraTarget()
     local playerOffsetFromCenter = playerPosition - Camera.Position()
     local x = 10
     local y = 50
+    local factor = 0.5
     if not IsDevice(SupportedDevices.MotoGPower) then
         x = 100
+	factor = 0.2
     end
     if (math.abs(playerOffsetFromCenter.X) > x) or (math.abs(playerOffsetFromCenter.Y) > y) then
-        Camera.MoveToTarget(playerPosition + playerMoveDirection * ((Window.Width * 0.5) / GetCameraZoom()))
+        Camera.MoveToTarget(playerPosition + playerMoveDirection * ((Window.Width * factor) / GetCameraZoom()))
     end
 end
 
@@ -129,12 +132,12 @@ local function CheckItemsTouched()
     elseif IsItemTouched(CommunicationsModule) then
         Inventory.AddItem(Items.CommunicationsModule)
         RocketPartsFound = RocketPartsFound + 1
+    elseif IsItemTouched(Boat) then
+        Inventory.AddItem(Items.Boat)
     elseif Meat ~= nil then
         if IsItemTouched(Meat) then
             Inventory.AddItem(Items.Meat)
         end
-    elseif IsItemTouched(Boat) then
-        Inventory.AddItem(Items.Boat)
     end
 end
 
@@ -154,24 +157,12 @@ local function GetTouchTarget()
     end
 end
 
-local function CheckCanUseItem(alienHomePosition)
-    local target = alienHomePosition - playerTransform.Position
-    if Inventory.HasItem(Items.Meat.Id) and target:SquaredLength() < (100 * 100) then
-        Inventory.DropItem(Items.Meat.Id)
-        Meat.Transform.Position = playerTransform.Position + target:Normalized() * 50
-    end
-end
-
 local function UpdateAlive()
     GetTouchTarget()
     CheckCollisions()
     MovePlayerToTarget()
     UpdateCameraTarget()
     CheckItemsTouched()
-
-    if NocturnalAlien.State ~= CommonStates.Dead then
-        CheckCanUseItem(NocturnalAlienHomePosition)
-    end
 end
 
 local function UpdateDead()

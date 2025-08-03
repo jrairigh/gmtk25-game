@@ -21,14 +21,14 @@ Window = {
 
 ConfigureGame(Window.Height, Window.Title)
 
-SetCameraZoom(3)
-SetCameraPosition(PlayerHomePosition)
+Camera.Initialize()
 
 Sounds = {}
 Sounds.PlayPickupSfx = LoadSoundEx("sfx/pickup.wav")
 Sounds.PlayNopeSfx = LoadSoundEx("sfx/nope.wav")
 Sounds.PlayDeathSfx = LoadSoundEx("sfx/death.wav")
 Sounds.PlayGrowlSfx = LoadSoundEx("sfx/growl.wav")
+Sounds.PlayAlienDeathSfx = LoadSoundEx("sfx/alien_death.wav")
 
 Textures = {}
 Textures.DrawPlanet = LoadTextureEx("art/planet.png", 0, 0, 1, 1)

@@ -2,13 +2,15 @@ require("assets.rt.capi")
 require("assets.rt.vec2")
 
 local cameraTarget = Vector.Zero
-local isCameraMoving = false
+local isCameraMoving = true
 local boarderCoord = 500
 
 Camera = {
-    Offset = function()
-        local cameraOffset = GetCameraOffset()
-        return Vector:New(cameraOffset.X, cameraOffset.Y)
+
+    Initialize = function()
+        SetCameraZoom(3)
+        SetCameraPosition(Vector:New(-300, 300))
+        cameraTarget = PlayerHomePosition
     end,
 
     Position = function()
@@ -30,33 +32,33 @@ Camera = {
         local scale = 0.75
         isCameraMoving = length > 10
         if isCameraMoving then
-            local cameraMoveDirection = cameraOffset:Normalized()
             local camZoom = GetCameraZoom()
             local camOffsetX = Window.Width / (2 * camZoom)
             local camOffsetY = Window.Height / (2 * camZoom)
-
+            
             if cameraPosition.X < (-boarderCoord + camOffsetX) then
                 cameraPosition.X = -boarderCoord + camOffsetX
             end
-
+            
             if cameraPosition.X > (boarderCoord - camOffsetX) then
                 cameraPosition.X = boarderCoord - camOffsetX
             end
-
+            
             if cameraPosition.Y > (boarderCoord - camOffsetY) then
                 cameraPosition.Y = boarderCoord - camOffsetY
             end
-
+            
             if cameraPosition.Y < (-boarderCoord + camOffsetY) then
                 cameraPosition.Y = -boarderCoord + camOffsetY
             end
-
-            local speed = length * scale
-
+            
+            local speed = math.max(100, length * scale)
+            
             if Player.IsDead() then
                 speed = 300
             end
-
+            
+            local cameraMoveDirection = cameraOffset:Normalized()
             cameraPosition = cameraPosition + cameraMoveDirection * speed * GetFrameTime()
             SetCameraPosition(cameraPosition)
         end

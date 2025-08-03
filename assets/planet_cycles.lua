@@ -28,7 +28,7 @@ PlanetCycles = {
     end,
 
     GetTemperature = function()
-        return Cycles(tempC, minTempC, maxTempC, morningHour, eveningHour, 30, 30, LerpNumber)
+        return Cycles(tempC, minTempC, maxTempC, 1, eveningHour, 30, 30, LerpNumber)
     end,
 
     GetTime = function()
