@@ -4,12 +4,12 @@ require("assets.camera")
 require("assets.items")
 require("assets.math")
 
-PlayerHomePosition = Vector:New(217, 153)
+PlayerHomePosition = Vector.Zero
 RocketPartsFound = 0
 
 local playerTransform = {
     Position = PlayerHomePosition, 
-    Scale = Vector:New(0.5, 0.5), 
+    Scale = Vector:New(1, 1), 
     Rotation = 0
 }
 
@@ -17,7 +17,6 @@ local playerTarget = Vector.Zero
 local playerMoveDirection = Vector.Zero
 local playerSpeed = 100
 local playerIsOnWater = false
---Inventory.AddItem(Items.Boat)
 
 local PlayerStates = {
     Alive = 1,
@@ -44,8 +43,8 @@ end
 
 local function IsAtLaunchPad(nextFramePlayerPosition)
     local launchPadBoundingBox = {
-        X = LaunchPad.Transform.Position.X - SpriteSize * 0.5,
-        Y = LaunchPad.Transform.Position.Y - SpriteSize * 0.5,
+        X = 0,
+        Y = 0,
         Width = SpriteSize,
         Height = SpriteSize
     }
@@ -60,7 +59,7 @@ local function CheckCliffCollision(nextFramePlayerPosition)
 end
 
 local function CheckCollisionWithNocturalAlienBurrow(nextFramePlayerPosition)
-    return CheckCollision({X = 379, Y = -355, Width = 36, Height = 22}, nextFramePlayerPosition) and NocturnalAlien.State ~= CommonStates.Dead
+    return CheckCollision({X = 379, Y = -355, Width = 36, Height = 22}, nextFramePlayerPosition)
 end
 
 local function CheckCollisions()
@@ -73,71 +72,31 @@ local function CheckCollisions()
         if CheckCliffCollision(nextFramePlayerPosition) then
             Sounds.PlayNopeSfx()
             playerMoveDirection = Vector.Zero
-        elseif not IsTouchingWater(nextFramePlayerPosition, 4, 4) then
-            playerIsOnWater = false
         end
-    elseif IsTouchingWater(nextFramePlayerPosition, 4, 4) then
-        -- checking if player is on launch pad because it uses the same mask as the water, so acquiring the boat would allow saling through
-        -- the launch pad
-        if Inventory.HasItem(Items.Boat.Id) and not CheckCliffCollision(nextFramePlayerPosition) then
-            playerIsOnWater = true
-        else
-            Sounds.PlayNopeSfx()
-            playerMoveDirection = Vector.Zero
-            playerIsOnWater = false
-        end
-    elseif CheckCollisionWithNocturalAlienBurrow(nextFramePlayerPosition) or IsLandObstacle(nextFramePlayerPosition, 4, 4) then
+    elseif CheckCollisionWithNocturalAlienBurrow(nextFramePlayerPosition) then
         Sounds.PlayNopeSfx()
         playerMoveDirection = Vector.Zero
     end
 end
 
 local function UpdateCameraTarget()
-    local playerPosition = playerTransform.Position
-    local playerOffsetFromCenter = playerPosition - Camera.Position()
-    local x = 10
-    local y = 50
-    local factor = 0.5
-    if not IsDevice(SupportedDevices.MotoGPower) then
-        x = 100
-	factor = 0.2
-    end
-    if (math.abs(playerOffsetFromCenter.X) > x) or (math.abs(playerOffsetFromCenter.Y) > y) then
-        Camera.MoveToTarget(playerPosition + playerMoveDirection * ((Window.Width * factor) / GetCameraZoom()))
-    end
+    Camera.Speed = math.max(100, Camera:DistanceToTarget() * 0.75)
+    Camera:UpdateTarget(playerTransform.Position, playerMoveDirection)
+    --local playerPosition = playerTransform.Position
+    --local playerOffsetFromCenter = playerPosition - Camera.Position()
+
+    --if not IsDevice(SupportedDevices.MotoGPower) then
+    --    x = 100
+	--factor = 0.2
+    --end
+    --if (math.abs(playerOffsetFromCenter.X) > x) or (math.abs(playerOffsetFromCenter.Y) > y) then
+    --    Camera.MoveToTarget(playerPosition + playerMoveDirection * ((Window.Width * factor) / Camera.Zoom()))
+    --end
 end
 
 local function CheckItemsTouched()
-    if IsItemTouched(Fins) then
-        Inventory.AddItem(Items.Fins)
-        RocketPartsFound = RocketPartsFound + 1
-    elseif IsItemTouched(Body) then
-        Inventory.AddItem(Items.Body)
-        RocketPartsFound = RocketPartsFound + 1
-    elseif IsItemTouched(FuelRod1) then
+    if IsItemTouched(FuelRod1) then
         Inventory.AddItem(Items.FuelRod1)
-        RocketPartsFound = RocketPartsFound + 1
-    elseif IsItemTouched(FuelRod2) then
-        Inventory.AddItem(Items.FuelRod2)
-        RocketPartsFound = RocketPartsFound + 1
-    elseif IsItemTouched(FuelRod3) then
-        Inventory.AddItem(Items.FuelRod3)
-        RocketPartsFound = RocketPartsFound + 1
-    elseif IsItemTouched(CrewCapsule) then
-        Inventory.AddItem(Items.CrewCapsule)
-        RocketPartsFound = RocketPartsFound + 1
-    elseif IsItemTouched(NavigationModule) then
-        Inventory.AddItem(Items.NavigationModule)
-        RocketPartsFound = RocketPartsFound + 1
-    elseif IsItemTouched(CommunicationsModule) then
-        Inventory.AddItem(Items.CommunicationsModule)
-        RocketPartsFound = RocketPartsFound + 1
-    elseif IsItemTouched(Boat) then
-        Inventory.AddItem(Items.Boat)
-    elseif Meat ~= nil then
-        if IsItemTouched(Meat) then
-            Inventory.AddItem(Items.Meat)
-        end
     end
 end
 
@@ -148,42 +107,27 @@ local function MovePlayerToTarget()
     end
 end
 
-local function GetTouchTarget()
-    local touch = GetTouch()
-    local playerPosition = playerTransform.Position
-    if touch.IsTapped then
-        playerTarget = ScreenToWorldSpace(touch.Position)
-        playerMoveDirection = (playerTarget - playerPosition):Normalized()
-    end
-end
-
-local function UpdateAlive()
-    GetTouchTarget()
-    CheckCollisions()
-    MovePlayerToTarget()
-    UpdateCameraTarget()
-    CheckItemsTouched()
-end
-
-local function UpdateDead()
-    if Camera.IsCameraIdle() then
-        playerState = PlayerStates.Alive
-    end
-end
-
 Player = {
-    Update = function()
-        if playerState == PlayerStates.Alive then
-            UpdateAlive()
-        elseif playerState == PlayerStates.Dead then
-            UpdateDead()
+    TotalMoves = 0,
+    Cell = {
+        X = 0,
+        Y = 0
+    },
+
+    Update = function(self, cellX, cellY)
+        if not self:IsValidMove(cellX, cellY) then
+            return
         end
+
+        self.TotalMoves = self.TotalMoves + math.abs(self.Cell.X - cellX) + math.abs(self.Cell.Y - cellY)
+        self.Cell.X = cellX
+        self.Cell.Y = cellY
+        --print("Player cell X " .. self.Cell.X .. "   cell Y " .. self.Cell.Y)
     end,
 
     Position = function()
         return playerTransform.Position
     end,
-
     Render = function()
         if playerIsOnWater then
             Textures.DrawItems(1, 3, 0xFFFFFFFF, playerTransform)
@@ -211,5 +155,10 @@ Player = {
 
     IsDead = function()
         return playerState == PlayerStates.Dead
+    end,
+
+    IsValidMove = function(self, cellX, cellY)
+        -- single mode for now
+        return not (self.Cell.X ~= cellX and self.Cell.Y ~= cellY)
     end
 }
